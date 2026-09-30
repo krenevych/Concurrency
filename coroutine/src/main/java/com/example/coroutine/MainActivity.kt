@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.transition.Visibility
 import com.example.coroutine.databinding.ActivityMainBinding
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,33 +46,51 @@ class MainActivity : AppCompatActivity() {
 
         // on Progress
             // load City
-                val city = loadCity()
-               // and set it into correspondent text view
-                binding.tvCityValue.text = city
+                loadCity{ city ->
+                    // and set it into correspondent text view
+                    binding.tvCityValue.text = city
 
-            // then load temperature for loaded City,
-                val temperature = loadTemperature(city)
-               // and set it into correspondent text view
-                binding.tvTemperatureValue.text = temperature.toString()
+                    // then load temperature for loaded City,
+                    loadTemperature(city) { temperature ->
+                        // and set it into correspondent text view
+                        binding.tvTemperatureValue.text = temperature.toString()
 
-        // on Finish:
-            // hide progress bar
-            binding.progressBar.visibility = View.GONE
+                        // on Finish:
+                        // hide progress bar
+                        binding.progressBar.visibility = View.GONE
 
-            // enable button "load data"
-            binding.btnLoadData.isEnabled = true
+                        // enable button "load data"
+                        binding.btnLoadData.isEnabled = true
+                    }
+
+                }
+
     }
 
-    private fun loadCity(): String {
-        Thread.sleep(3_000)  // to simulate Long-running operation
+    private fun loadCity(onResult: (String) -> Unit) {
+        thread {
+            Thread.sleep(3_000)  // to simulate Long-running operation
 
-        return "Kyiv"
+            runOnUiThread {
+                onResult("Kyiv") //            return "Kyiv"
+            }
+
+        }
+
     }
 
-    private fun loadTemperature(city: String): Int {
-        Thread.sleep(3_000)   // to simulate Long-running operation
+    private fun loadTemperature(city: String, onResult: (Int) -> Unit) {
 
-        return 15  // Celsius degrees
+        thread {
+            Thread.sleep(3_000)   // to simulate Long-running operation
+
+            runOnUiThread {
+                onResult(15)  // return 15
+            }
+
+        }
+
+
     }
 
     companion object {
