@@ -18,19 +18,19 @@ class MainActivity : AppCompatActivity() {
         binding.btnLoadData.setOnClickListener {
             loadData { loadedData: String ->
                 binding.tvResult.text = loadedData
-                Log.d(TAG, "loadData: text_view updated")
+                Log.d(TAG, "loadData: text_view updated, Activity ${this@MainActivity}")
             }
         }
     }
 
     private fun loadData(onResult: (String) -> Unit) {
 
-        Log.d(TAG, "loadData: START loading")
+        Log.d(TAG, "loadData: START loading, Activity ${this@MainActivity}")
 
         thread {
 
-            Thread.sleep(3_000)  // Імітація важкої роботи (15 секунд)
-            Log.d(TAG, "loadData: FINISH loading")
+            Thread.sleep(10_000)  // Імітація важкої роботи (15 секунд)
+            Log.d(TAG, "loadData: FINISH loading,  Activity ${this@MainActivity}")
 
             runOnUiThread {
                 onResult("Дані завантажено!")
