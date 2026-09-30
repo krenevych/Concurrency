@@ -2,6 +2,7 @@ package com.example.multithreading
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.multithreading.databinding.ActivityMainBinding
@@ -21,13 +22,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val handler = Handler()  // хендлер, що асоційований з головним потоком
+    val handler = Handler(Looper.getMainLooper())  // хендлер, що асоційований з головним потоком
 
     private fun loadData() {
 
         Log.d(TAG, "loadData: START loading")
 
         thread {
+//            Looper.prepare()
+//            val handler = Handler()
+
             // Імітація важкої роботи (15 секунд)
             Thread.sleep(3_000)
 
