@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val handler = Handler(Looper.getMainLooper())  // хендлер, що асоційований з головним потоком
+//    val handler = Handler(Looper.getMainLooper())  // хендлер, що асоційований з головним потоком
 
     private fun loadData() {
 
@@ -37,7 +37,12 @@ class MainActivity : AppCompatActivity() {
 
             Log.d(TAG, "loadData: FINISH loading")
 
-            handler.post { // надсилає меседж у Looper
+//            handler.post { // надсилає меседж у Looper
+//                binding.tvResult.text = "Дані завантажено!"  // можемо міняти лише з головного потоку
+//                Log.d(TAG, "loadData: text_view updated")
+//            }
+
+            runOnUiThread {
                 binding.tvResult.text = "Дані завантажено!"  // можемо міняти лише з головного потоку
                 Log.d(TAG, "loadData: text_view updated")
             }
