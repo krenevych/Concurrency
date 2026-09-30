@@ -1,8 +1,6 @@
 package com.example.multithreading
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.multithreading.databinding.ActivityMainBinding
@@ -18,39 +16,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLoadData.setOnClickListener {
-            loadData()
+            loadData { loadedData: String ->
+                binding.tvResult.text = loadedData
+                Log.d(TAG, "loadData: text_view updated")
+            }
         }
     }
 
-//    val handler = Handler(Looper.getMainLooper())  // хендлер, що асоційований з головним потоком
-
-    private fun loadData() {
+    private fun loadData(onResult: (String) -> Unit) {
 
         Log.d(TAG, "loadData: START loading")
 
         thread {
-//            Looper.prepare()
-//            val handler = Handler()
 
-            // Імітація важкої роботи (15 секунд)
-            Thread.sleep(3_000)
-
+            Thread.sleep(3_000)  // Імітація важкої роботи (15 секунд)
             Log.d(TAG, "loadData: FINISH loading")
 
-//            handler.post { // надсилає меседж у Looper
-//                binding.tvResult.text = "Дані завантажено!"  // можемо міняти лише з головного потоку
-//                Log.d(TAG, "loadData: text_view updated")
-//            }
-
             runOnUiThread {
-                binding.tvResult.text = "Дані завантажено!"  // можемо міняти лише з головного потоку
-                Log.d(TAG, "loadData: text_view updated")
+                onResult("Дані завантажено!")
             }
 
-
         }
-
-        Log.d(TAG, "loadData: end of function")
     }
 
     companion object
