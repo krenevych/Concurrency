@@ -5,8 +5,15 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.Visibility
 import com.example.coroutine.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,58 +27,89 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLoadData.setOnClickListener {
-            loadData()
+//            lifecycleScope.launch {
+                loadData(1)
+//            }
         }
 
     }
 
-    private fun loadData() {
+    private fun loadData(step: Int, data: Any? = null) {
         Log.d(TAG, "loadData: start data loading from the internet...")
 
-        // on Start:
-            // disable button "load data"
-            binding.btnLoadData.isEnabled = false
+        when(step) {
+            1 -> { // блок 1 (step)
+                // on Start:
+                // disable button "load data"
+                binding.btnLoadData.isEnabled = false
 
-            // show progress bar
-            binding.progressBar.visibility = View.VISIBLE
-            // clear City
-            binding.tvCityValue.text = ""
+                // show progress bar
+                binding.progressBar.visibility = View.VISIBLE
+                // clear City
+                binding.tvCityValue.text = ""
 
-            // clear Temperature
-            binding.tvTemperatureValue.text = ""
+                // clear Temperature
+                binding.tvTemperatureValue.text = ""
 
-            // show Toast that data is started loading.
-            Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show()
+                // show Toast that data is started loading.
+                Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show()
 
-        // on Progress
-            // load City
-                val city = loadCity()
-               // and set it into correspondent text view
+                // on Progress
+                // load City
+                thread {
+                    loadCity({city ->
+                        loadData(2, city)
+                    })  // <- suspend function
+                }
+
+            }
+            2 -> { // блок 2 (step)
+                // and set it into correspondent text view
+                val city = data as String
+
                 binding.tvCityValue.text = city
 
-            // then load temperature for loaded City,
-                val temperature = loadTemperature(city)
-               // and set it into correspondent text view
+                // then load temperature for loaded City,
+                thread {
+                    loadTemperature(city) { temperature ->  // <- suspend function
+                        loadData(3, temperature)
+                    }
+                }
+
+            }
+            3 -> {  // блок 3 (step)
+
+                val temperature = data as Int
+
+                // and set it into correspondent text view
                 binding.tvTemperatureValue.text = temperature.toString()
 
-        // on Finish:
-            // hide progress bar
-            binding.progressBar.visibility = View.GONE
+                // on Finish:
+                // hide progress bar
+                binding.progressBar.visibility = View.GONE
 
-            // enable button "load data"
-            binding.btnLoadData.isEnabled = true
+                // enable button "load data"
+                binding.btnLoadData.isEnabled = true
+            }
+        } // end of "when"
+
     }
 
-    private fun loadCity(): String {
+    private fun loadCity(onResult: (String) -> Unit) {
         Thread.sleep(3_000)  // to simulate Long-running operation
 
-        return "Kyiv"
+        runOnUiThread {
+            onResult("Kyiv") // return "Kyiv"
+        }
+
     }
 
-    private fun loadTemperature(city: String): Int {
+    private fun loadTemperature(city: String, onResult: (Int) -> Unit)  {
         Thread.sleep(3_000)   // to simulate Long-running operation
 
-        return 15  // Celsius degrees
+        runOnUiThread {
+            onResult(15) // return 15  // Celsius degrees
+        }
     }
 
     companion object {
