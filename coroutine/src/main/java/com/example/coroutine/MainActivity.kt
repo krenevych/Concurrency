@@ -5,36 +5,26 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.transition.Visibility
+import androidx.lifecycle.lifecycleScope
 import com.example.coroutine.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var coroutineScope: CoroutineScope
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        Log.d(TAG, "onCreate: $this")
-
         binding = ActivityMainBinding.inflate(layoutInflater)
-        coroutineScope = CoroutineScope(Dispatchers.Main)
 
         setContentView(binding.root)
 
         binding.btnLoadData.setOnClickListener {
 
-            coroutineScope.launch {
+            lifecycleScope.launch {
                 loadData()
             }
 
@@ -99,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        coroutineScope.cancel()
+//        coroutineScope.cancel()
     }
 
     companion object {
