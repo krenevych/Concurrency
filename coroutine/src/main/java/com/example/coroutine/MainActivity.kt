@@ -7,8 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.coroutine.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
@@ -24,15 +26,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLoadData.setOnClickListener {
 
-            lifecycleScope.launch {
+//            lifecycleScope.launch {
                 loadData()
-            }
+//            }
 
         }
 
     }
 
-    private suspend fun loadData() {
+    private fun loadData() {
         Log.d(TAG, "loadData: START data loading from the internet... $this")
 
         // on Start:
@@ -50,36 +52,57 @@ class MainActivity : AppCompatActivity() {
             // show Toast that data is started loading.
             Toast.makeText(this, "Loading data", Toast.LENGTH_SHORT).show()
 
-        // on Progress
+
+
+        val jobCity = lifecycleScope.launch(Dispatchers.IO) {
+            // on Progress
             // load City
             val city = loadCity()
 
-               // and set it into correspondent text view
+            withContext(Dispatchers.Main) {
+                // and set it into correspondent text view
                 binding.tvCityValue.text = city
+            }
+        }
 
+
+        val jobTemperature = lifecycleScope.launch(Dispatchers.IO) {
             // then load temperature for loaded City,
-                val temperature = loadTemperature(city)
-               // and set it into correspondent text view
-                binding.tvTemperatureValue.text = temperature.toString()
+            val temperature = loadTemperature()
 
-        // on Finish:
+            withContext(Dispatchers.Main) {
+                // and set it into correspondent text view
+                binding.tvTemperatureValue.text = temperature.toString()
+            }
+        }
+
+        lifecycleScope.launch {
+            jobCity.join()
+            jobTemperature.join()
+
+            // on Finish:
             // hide progress bar
             binding.progressBar.visibility = View.GONE
 
             // enable button "load data"
             binding.btnLoadData.isEnabled = true
 
-        Log.d(TAG, "loadData: FINISH data loading from the internet... $this")
+            Log.d(TAG, "loadData: FINISH data loading from the internet... $this")
+
+        }
+
+
+
     }
 
     private suspend fun loadCity(): String {
 //        Thread.sleep(3_000)  // to simulate Long-running operation
-        delay(3_000.milliseconds)
+        delay(7_000.milliseconds)
 
         return "Kyiv"
     }
 
-    private suspend fun loadTemperature(city: String): Int {
+    private suspend fun loadTemperature(): Int {
 //        Thread.sleep(3_000)   // to simulate Long-running operation
         delay(3_000.milliseconds)
 
