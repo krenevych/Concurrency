@@ -7,26 +7,43 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.transition.Visibility
 import com.example.coroutine.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var coroutineScope: CoroutineScope
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+//        Log.d(TAG, "onCreate: $this")
+
         binding = ActivityMainBinding.inflate(layoutInflater)
+        coroutineScope = CoroutineScope(Dispatchers.Main)
 
         setContentView(binding.root)
 
         binding.btnLoadData.setOnClickListener {
-            loadData()
+
+            coroutineScope.launch {
+                loadData()
+            }
+
         }
 
     }
 
-    private fun loadData() {
-        Log.d(TAG, "loadData: start data loading from the internet...")
+    private suspend fun loadData() {
+        Log.d(TAG, "loadData: START data loading from the internet... $this")
 
         // on Start:
             // disable button "load data"
@@ -45,7 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         // on Progress
             // load City
-                val city = loadCity()
+            val city = loadCity()
+
                // and set it into correspondent text view
                 binding.tvCityValue.text = city
 
@@ -60,18 +78,28 @@ class MainActivity : AppCompatActivity() {
 
             // enable button "load data"
             binding.btnLoadData.isEnabled = true
+
+        Log.d(TAG, "loadData: FINISH data loading from the internet... $this")
     }
 
-    private fun loadCity(): String {
-        Thread.sleep(3_000)  // to simulate Long-running operation
+    private suspend fun loadCity(): String {
+//        Thread.sleep(3_000)  // to simulate Long-running operation
+        delay(3_000.milliseconds)
 
         return "Kyiv"
     }
 
-    private fun loadTemperature(city: String): Int {
-        Thread.sleep(3_000)   // to simulate Long-running operation
+    private suspend fun loadTemperature(city: String): Int {
+//        Thread.sleep(3_000)   // to simulate Long-running operation
+        delay(3_000.milliseconds)
 
         return 15  // Celsius degrees
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        coroutineScope.cancel()
     }
 
     companion object {
