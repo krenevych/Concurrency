@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLoadData.setOnClickListener {
             val continuation = LoadDataContinuation(this)
-            loadDataContinuation(continuation)
+            loadData(continuation)
         }
     }
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
      * Стейт-машина без універсального `result: Any?`.
      * Дані записуються безпосередньо у відповідні поля [completion].
      */
-    fun loadDataContinuation(completion: LoadDataContinuation) {
+    fun loadData(completion: LoadDataContinuation) {
         Log.d(TAG, "loadDataContinuation: label=${completion.label}")
 
         when (completion.label) {
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Loading data...", Toast.LENGTH_SHORT).show()
 
                 thread {
-                    loadCityContinuation(completion)
+                    loadCity(completion)
                 }
             }
 
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 completion.label = 2
 
                 thread {
-                    loadTemperatureContinuation(completion)
+                    loadTemperature(completion)
                 }
             }
 
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadCityContinuation(continuation: LoadDataContinuation) {
+    private fun loadCity(continuation: LoadDataContinuation) {
         Thread.sleep(3_000) // Імітація тривалої роботи
 
         runOnUiThread {
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadTemperatureContinuation(continuation: LoadDataContinuation) {
+    private fun loadTemperature(continuation: LoadDataContinuation) {
         Thread.sleep(3_000) // Імітація тривалої роботи
 
         runOnUiThread {
@@ -114,6 +114,6 @@ class LoadDataContinuation(
             Log.e(MainActivity.TAG, "Error during execution", result.exceptionOrNull())
             return
         }
-        activity.loadDataContinuation(this)
+        activity.loadData(this)
     }
 }
