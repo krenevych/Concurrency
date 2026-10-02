@@ -7,10 +7,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.coroutine.databinding.ActivityMainBinding
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity() {
@@ -54,31 +55,29 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val jobCity = lifecycleScope.launch(Dispatchers.IO) {
+        val jobCity: Deferred<String> = lifecycleScope.async (Dispatchers.IO) {
             // on Progress
             // load City
             val city = loadCity()
-
-            withContext(Dispatchers.Main) {
-                // and set it into correspondent text view
-                binding.tvCityValue.text = city
-            }
+            city // return city
         }
 
 
-        val jobTemperature = lifecycleScope.launch(Dispatchers.IO) {
+        val jobTemperature = lifecycleScope.async(Dispatchers.IO) {
             // then load temperature for loaded City,
-            val temperature = loadTemperature()
-
-            withContext(Dispatchers.Main) {
-                // and set it into correspondent text view
-                binding.tvTemperatureValue.text = temperature.toString()
-            }
+            val temperature: Int = loadTemperature()
+            temperature // return temperature
         }
 
         lifecycleScope.launch {
-            jobCity.join()
-            jobTemperature.join()
+            val city: String = jobCity.await()
+            val temperature: Int = jobTemperature.await()
+
+            // and set it into correspondent text view
+            binding.tvCityValue.text = city
+
+            // and set it into correspondent text view
+            binding.tvTemperatureValue.text = temperature.toString()
 
             // on Finish:
             // hide progress bar
