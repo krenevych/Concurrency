@@ -23,3 +23,4 @@ rootProject.name = "Concurrency"
 include(":coroutine")
 include(":multithreading")
 include(":dice")
+include(":cancellation")
