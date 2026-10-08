@@ -1,6 +1,5 @@
 package com.example.cancellation
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,13 +7,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
-class CalculationViewModel: ViewModel() {
+class CalculationViewModel : ViewModel() {
 
     private var _resulLV: MutableLiveData<Long> = MutableLiveData(0L)
     val resultLV: LiveData<Long>
