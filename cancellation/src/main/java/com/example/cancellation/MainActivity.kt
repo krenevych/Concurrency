@@ -6,6 +6,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cancellation.databinding.ActivityMainBinding
+import com.example.cancellation.state.Calculated
+import com.example.cancellation.state.Canceled
+import com.example.cancellation.state.Error
+import com.example.cancellation.state.Progress
 import kotlin.getValue
 
 class MainActivity : AppCompatActivity() {
@@ -24,12 +28,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.state.observe(this) { state ->
 
             when (state) {
-                is Error -> {   //state.error
+                Error -> {   //state.error  state == Error
                     Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
                         .show()
                 }
 
-                is Progress -> {
+                Progress -> {
                     binding.etNum.isEnabled = false
                     binding.progressBar.visibility = View.VISIBLE
                     binding.btnCalculate.isEnabled = false
@@ -37,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                     binding.tvResult.text = ""
                 }
 
-                is Canceled -> {
+                Canceled -> {
                     binding.etNum.isEnabled = true
                     binding.progressBar.visibility = View.GONE
                     binding.btnCalculate.isEnabled = true

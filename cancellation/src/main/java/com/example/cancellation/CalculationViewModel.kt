@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cancellation.state.Calculated
+import com.example.cancellation.state.Canceled
+import com.example.cancellation.state.Error
+import com.example.cancellation.state.Progress
+import com.example.cancellation.state.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import kotlin.time.Duration.Companion.milliseconds
 
 class CalculationViewModel : ViewModel() {
 
@@ -37,12 +40,12 @@ class CalculationViewModel : ViewModel() {
     fun calculate(n: String?) {
 
         if (n.isNullOrEmpty()) {  // n = null or n = ""
-            _state.value = Error() //State(error = true)
+            _state.value = Error //State(error = true)
             return
         }
 
         calculationJob = viewModelScope.launch {
-            _state.value = Progress() //State(progress = true)
+            _state.value = Progress //State(progress = true)
 
 
             val result = withContext(Dispatchers.Default) {
@@ -58,7 +61,7 @@ class CalculationViewModel : ViewModel() {
         calculationJob?.cancel()
         calculationJob = null
 
-        _state.value = Canceled()//State(canceled = true)
+        _state.value = Canceled   //State(canceled = true)
     }
 
 
