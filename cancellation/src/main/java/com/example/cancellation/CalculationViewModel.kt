@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kotlin.time.Duration.Companion.milliseconds
 
 class CalculationViewModel : ViewModel() {
@@ -27,9 +28,9 @@ class CalculationViewModel : ViewModel() {
         for (i in 1..n) {
             result += i
 
-            delay(500.milliseconds)
+//            delay(500.milliseconds)
 //            if (result % 100_000_000L == 0L){
-//                yield() // <== корутина буде перевіряти чи вона скасована
+                yield() // <== корутина буде перевіряти чи вона скасована
 //                Log.d("XXXX", "Current = $result")
 //            }
         }
@@ -43,8 +44,8 @@ class CalculationViewModel : ViewModel() {
         calculationJob = viewModelScope.launch {
             _progress.value = true
 
-            withContext(Dispatchers.IO) {
-                _resulLV.postValue(calculateSum(n))
+            _resulLV.value = withContext(Dispatchers.Default) {
+                calculateSum(n)
             }
 
             _progress.value = false
