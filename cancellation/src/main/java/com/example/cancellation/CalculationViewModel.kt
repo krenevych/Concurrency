@@ -14,25 +14,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class CalculationViewModel : ViewModel() {
 
-    private val _state = MutableLiveData(State())
+    private val _state: MutableLiveData<State> = MutableLiveData(Calculated())
     val state: LiveData<State>
         get() = _state
-
-//    private val _resulLV: MutableLiveData<Long> = MutableLiveData(0L)
-//    val resultLV: LiveData<Long>
-//        get() = _resulLV
-//
-//    private val _progress = MutableLiveData(false)
-//    val progress: LiveData<Boolean>
-//        get() = _progress
-//
-//    private val _error = MutableLiveData(false)
-//    val error: LiveData<Boolean>
-//        get() = _error
-//
-//    private val _canceled = MutableLiveData(false)
-//    val canceled: LiveData<Boolean>
-//        get() = _canceled
 
     private suspend fun calculateSum(n: Long): Long {
         var result: Long = 0L
@@ -53,37 +37,28 @@ class CalculationViewModel : ViewModel() {
     fun calculate(n: String?) {
 
         if (n.isNullOrEmpty()) {  // n = null or n = ""
-//            _error.value = true
-            _state.value = State(error = true)
+            _state.value = Error() //State(error = true)
             return
         }
 
         calculationJob = viewModelScope.launch {
-            _state.value = State(progress = true)
-//            _progress.value = true
+            _state.value = Progress() //State(progress = true)
 
 
             val result = withContext(Dispatchers.Default) {
                 calculateSum(n.toLong())
             }
 
-            _state.value = State(calculated = result)
-//            _resulLV.value =
-//                _progress.value = false
+            _state.value = Calculated(result) //State(calculated = result)
         }
 
     }
 
     fun cancel() {
-
         calculationJob?.cancel()
         calculationJob = null
 
-        _state.value = State(canceled = true)
-//        _canceled.value = true
-//        _progress.value = false
-//        _resulLV.postValue(0)
-
+        _state.value = Canceled()//State(canceled = true)
     }
 
 
