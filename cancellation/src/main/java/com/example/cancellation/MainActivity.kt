@@ -2,6 +2,7 @@ package com.example.cancellation
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cancellation.databinding.ActivityMainBinding
@@ -29,16 +30,26 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBar.visibility = if (progress) View.VISIBLE else View.GONE
                 binding.btnCalculate.isEnabled = !progress
                 binding.btnCancel.isEnabled = progress
-
             }
+        }
 
+        viewModel.error.observe(this) { error ->
+            Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        viewModel.canceled.observe(this) { canceled ->
+            if (canceled){
+                Toast.makeText(this, "Calculation was canceled", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
         }
 
         binding.btnCalculate.setOnClickListener {
-            val n = binding.etNum.text.toString().toLong()
+            val n_str = binding.etNum.text.toString() // "".toLong()
 
-            viewModel.calculate(n)
+            viewModel.calculate(n_str)
         }
 
         binding.btnCancel.setOnClickListener {

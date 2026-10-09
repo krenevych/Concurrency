@@ -22,6 +22,13 @@ class CalculationViewModel : ViewModel() {
     val progress: LiveData<Boolean>
         get() = _progress
 
+    private var _error = MutableLiveData(false)
+    val error: LiveData<Boolean>
+        get() = _error
+
+    private var _canceled = MutableLiveData(false)
+    val canceled: LiveData<Boolean>
+        get() = _canceled
 
     private suspend fun calculateSum(n: Long): Long {
         var result: Long = 0L
@@ -39,13 +46,18 @@ class CalculationViewModel : ViewModel() {
 
 
     private var calculationJob: Job? = null
-    fun calculate(n: Long) {
+    fun calculate(n: String?) {
+
+        if (n.isNullOrEmpty()) {  // n = null or n = ""
+            _error.value = true
+            return
+        }
 
         calculationJob = viewModelScope.launch {
             _progress.value = true
 
             _resulLV.value = withContext(Dispatchers.Default) {
-                calculateSum(n)
+                calculateSum(n.toLong())
             }
 
             _progress.value = false
@@ -58,6 +70,7 @@ class CalculationViewModel : ViewModel() {
         calculationJob?.cancel()
         calculationJob = null
 
+        _canceled.value = true
         _progress.value = false
         _resulLV.postValue(0)
 
