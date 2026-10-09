@@ -16,18 +16,18 @@ class CalculationViewModel : ViewModel() {
     val state: LiveData<State>
         get() = _state
 
-    private suspend fun calculateSum(n: Long): Long {
-        var result: Long = 0L
-        for (i in 1..n) {
-            result += i
+    private suspend fun fib(n: Long): Long {
+        var f2 = 1L  // 0-й член послідовності Фібоначчі
+        var f1 = 1L  // 1-й член послідовності Фібоначчі
 
-//            delay(500.milliseconds)
-//            if (result % 100_000_000L == 0L){
-                yield() // <== корутина буде перевіряти чи вона скасована
-//                Log.d("XXXX", "Current = $result")
-//            }
+        for (i in 2.. n) {  // рахуємо починаючи з 2-го
+            val f = f2 + f1  // поточний член послідовності Фібоначчі
+            yield() // <== корутина буде перевіряти чи вона скасована
+            f2 = f1
+            f1 = f
+
         }
-        return result
+        return f1
     }
 
 
@@ -44,7 +44,7 @@ class CalculationViewModel : ViewModel() {
 
 
             val result = withContext(Dispatchers.Default) {
-                calculateSum(n.toLong())
+                fib(n.toLong())
             }
 
             _state.value = Calculated(result) //State(calculated = result)
