@@ -23,29 +23,37 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.state.observe(this) { state ->
 
-            if (state is Error){   //state.error
-                Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
-                    .show()
-            } else if (state is Progress) {
-                binding.etNum.isEnabled = false
-                binding.progressBar.visibility = View.VISIBLE
-                binding.btnCalculate.isEnabled = false
-                binding.btnCancel.isEnabled = true
-                binding.tvResult.text = ""
-            } else if (state is Canceled){
-                binding.etNum.isEnabled = true
-                binding.progressBar.visibility = View.GONE
-                binding.btnCalculate.isEnabled = true
-                binding.btnCancel.isEnabled = false
+            when (state) {
+                is Error -> {   //state.error
+                    Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
-                Toast.makeText(this, "Calculation was canceled", Toast.LENGTH_SHORT)
-                    .show()
-            } else if (state is Calculated){ // calculated
-                binding.etNum.isEnabled = true
-                binding.progressBar.visibility = View.GONE
-                binding.btnCalculate.isEnabled = true
-                binding.btnCancel.isEnabled = false
-                binding.tvResult.text = state.value.toString()
+                is Progress -> {
+                    binding.etNum.isEnabled = false
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.btnCalculate.isEnabled = false
+                    binding.btnCancel.isEnabled = true
+                    binding.tvResult.text = ""
+                }
+
+                is Canceled -> {
+                    binding.etNum.isEnabled = true
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnCalculate.isEnabled = true
+                    binding.btnCancel.isEnabled = false
+
+                    Toast.makeText(this, "Calculation was canceled", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is Calculated -> { // calculated
+                    binding.etNum.isEnabled = true
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnCalculate.isEnabled = true
+                    binding.btnCancel.isEnabled = false
+                    binding.tvResult.text = state.value.toString()
+                }
             }
 
         }
