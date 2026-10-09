@@ -14,19 +14,19 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class CalculationViewModel : ViewModel() {
 
-    private var _resulLV: MutableLiveData<Long> = MutableLiveData(0L)
+    private val _resulLV: MutableLiveData<Long> = MutableLiveData(0L)
     val resultLV: LiveData<Long>
         get() = _resulLV
 
-    private var _progress = MutableLiveData(false)
+    private val _progress = MutableLiveData(false)
     val progress: LiveData<Boolean>
         get() = _progress
 
-    private var _error = MutableLiveData(false)
+    private val _error = MutableLiveData(false)
     val error: LiveData<Boolean>
         get() = _error
 
-    private var _canceled = MutableLiveData(false)
+    private val _canceled = MutableLiveData(false)
     val canceled: LiveData<Boolean>
         get() = _canceled
 

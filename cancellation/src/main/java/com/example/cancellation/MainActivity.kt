@@ -34,8 +34,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.error.observe(this) { error ->
-            Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
-                .show()
+            if (error)
+                Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
+                    .show()
         }
 
         viewModel.canceled.observe(this) { canceled ->
