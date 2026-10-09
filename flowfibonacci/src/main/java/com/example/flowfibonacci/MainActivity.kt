@@ -29,12 +29,12 @@ class MainActivity : AppCompatActivity() {
                         .show()
                 }
 
-                Progress -> {
+                is Progress -> {
                     binding.etNum.isEnabled = false
                     binding.progressBar.visibility = View.VISIBLE
                     binding.btnCalculate.isEnabled = false
                     binding.btnCancel.isEnabled = true
-                    binding.tvResult.text = ""
+                    binding.tvResult.text =  binding.tvResult.text.toString() + " " + state.value
                 }
 
                 Canceled -> {
@@ -47,12 +47,11 @@ class MainActivity : AppCompatActivity() {
                         .show()
                 }
 
-                is Calculated -> { // calculated
+                Calculated -> { // calculated
                     binding.etNum.isEnabled = true
                     binding.progressBar.visibility = View.GONE
                     binding.btnCalculate.isEnabled = true
                     binding.btnCancel.isEnabled = false
-                    binding.tvResult.text = state.value.toString()
                 }
             }
 
