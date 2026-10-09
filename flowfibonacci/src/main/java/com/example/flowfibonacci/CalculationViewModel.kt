@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import java.math.BigInteger
 
 class CalculationViewModel : ViewModel() {
 
@@ -16,9 +17,9 @@ class CalculationViewModel : ViewModel() {
     val state: LiveData<State>
         get() = _state
 
-    private suspend fun fib(n: Long): Long {
-        var f2 = 1L  // 0-й член послідовності Фібоначчі
-        var f1 = 1L  // 1-й член послідовності Фібоначчі
+    private suspend fun fib(n: Long): BigInteger {
+        var f2 = BigInteger.ONE  // 0-й член послідовності Фібоначчі
+        var f1 = BigInteger.ONE  // 1-й член послідовності Фібоначчі
 
         for (i in 2.. n) {  // рахуємо починаючи з 2-го
             val f = f2 + f1  // поточний член послідовності Фібоначчі
