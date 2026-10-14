@@ -1,11 +1,13 @@
 package com.example.flowfibonacci
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flowfibonacci.databinding.ActivityMainBinding
+import java.math.BigInteger
 import kotlin.getValue
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +59,9 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        viewModel.fibonacciData.observe(this) { fib ->
+            Log.d("CCCC", "fib: $fib")
+        }
 
         binding.btnCalculate.setOnClickListener {
             val n_str = binding.etNum.text.toString() // "".toLong()
