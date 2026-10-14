@@ -1,6 +1,7 @@
 package com.example.flowfibonacci
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -10,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowfibonacci.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
-import kotlin.getValue
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +24,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(binding.root)
+
+        lifecycleScope.launch {
+            viewModel.fibonacciData.collect { fib ->
+                Log.d("CCCC", "fib: $fib")
+            }
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

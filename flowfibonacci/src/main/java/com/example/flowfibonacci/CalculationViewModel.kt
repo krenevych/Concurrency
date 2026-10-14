@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 import kotlin.time.Duration.Companion.milliseconds
@@ -23,6 +25,15 @@ class CalculationViewModel : ViewModel() {
 
     private val _state: MutableStateFlow<State> = MutableStateFlow(Calculated)
     val state: StateFlow<State> = _state.asStateFlow()
+
+    val fibonacciData: StateFlow<String> = fib(100)
+        .map { "$it" }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // Золотий стандарт!
+            initialValue = ""
+        )
 
     private fun fib(n: Long): Flow<BigInteger> {
         return flow {
