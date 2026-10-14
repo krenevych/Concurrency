@@ -5,7 +5,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.flowfibonacci.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 import kotlin.getValue
 
 class MainActivity : AppCompatActivity() {
@@ -21,40 +25,42 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        viewModel.state.observe(this) { state ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { state: State ->
+                    when (state) {
+                        Error -> {   //state.error  state == Error
+                            Toast.makeText(this@MainActivity, "Non valid int value", Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-            when (state) {
-                Error -> {   //state.error  state == Error
-                    Toast.makeText(this, "Non valid int value", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                        is Progress -> {
+                            binding.etNum.isEnabled = false
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.btnCalculate.isEnabled = false
+                            binding.btnCancel.isEnabled = true
+                            binding.tvResult.text =  binding.tvResult.text.toString() + " " + state.value
+                        }
 
-                is Progress -> {
-                    binding.etNum.isEnabled = false
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.btnCalculate.isEnabled = false
-                    binding.btnCancel.isEnabled = true
-                    binding.tvResult.text =  binding.tvResult.text.toString() + " " + state.value
-                }
+                        Canceled -> {
+                            binding.etNum.isEnabled = true
+                            binding.progressBar.visibility = View.GONE
+                            binding.btnCalculate.isEnabled = true
+                            binding.btnCancel.isEnabled = false
 
-                Canceled -> {
-                    binding.etNum.isEnabled = true
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCalculate.isEnabled = true
-                    binding.btnCancel.isEnabled = false
+                            Toast.makeText(this@MainActivity, "Calculation was canceled", Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
-                    Toast.makeText(this, "Calculation was canceled", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                Calculated -> { // calculated
-                    binding.etNum.isEnabled = true
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnCalculate.isEnabled = true
-                    binding.btnCancel.isEnabled = false
+                        Calculated -> { // calculated
+                            binding.etNum.isEnabled = true
+                            binding.progressBar.visibility = View.GONE
+                            binding.btnCalculate.isEnabled = true
+                            binding.btnCancel.isEnabled = false
+                        }
+                    }
                 }
             }
-
         }
 
 
